@@ -1,0 +1,24 @@
+on:
+  pull_request:
+  push:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        sbt: [1, 2]
+    steps:
+    - uses: actions/checkout@v6
+    - uses: sbt/setup-sbt@v1
+    - uses: actions/setup-java@v5
+      with:
+        java-version: 21
+        distribution: temurin
+    - run: echo "sbt.version=1.12.3" > project/build.properties
+      if: "${{ matrix.sbt == 1 }}"
+    - run: sbt test
+      if: "${{ matrix.sbt == 1 }}"
+    - run: sbt testFull
+      if: "${{ matrix.sbt == 2 }}"
